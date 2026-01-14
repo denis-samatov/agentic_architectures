@@ -2,6 +2,9 @@ import os
 from typing import List, Optional
 from dotenv import load_dotenv
 from rich.console import Console
+from rich.panel import Panel
+from rich.syntax import Syntax
+from IPython.display import Image, display
 
 def setup_environment(project_name: str, required_keys: Optional[List[str]] = None) -> Console:
     """
@@ -11,14 +14,20 @@ def setup_environment(project_name: str, required_keys: Optional[List[str]] = No
     3. Checks for required API keys.
     4. Returns a Rich Console for printing.
     """
+    console = Console()
+
     # Load .env from parent directory (assuming notebook is in the notebooks/ folder)
     # Adjust path if notebooks are nested deeper or moved
-    load_dotenv(dotenv_path="../.env")
+    env_path = "../.env"
+
+    # Check if .env exists in parent or current directory
+    if not os.path.exists(env_path) and not os.path.exists(".env"):
+         console.print("[yellow]Warning:[/yellow] .env file not found in parent directory or current directory.")
+
+    load_dotenv(dotenv_path=env_path)
     
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
     os.environ["LANGCHAIN_PROJECT"] = project_name
-    
-    console = Console()
     
     if required_keys:
         missing_keys = [key for key in required_keys if key not in os.environ]
@@ -32,5 +41,41 @@ def setup_environment(project_name: str, required_keys: Optional[List[str]] = No
         if not os.environ.get("LANGCHAIN_API_KEY"):
              console.print("[yellow]Warning:[/yellow] LANGCHAIN_API_KEY not found.")
 
-    console.print(f"[green]Environment setup for '{project_name}' complete.[/green]")
+    console.print(Panel(f"[green]Environment setup for '{project_name}' complete.[/green]", title="Setup", border_style="green"))
     return console
+
+def visualize_graph(app, console: Console):
+    """
+    Visualizes the LangGraph application graph.
+    Tries to draw using Mermaid API or PyGraphviz, falling back to Mermaid syntax.
+    """
+    graph = app.get_graph()
+
+    # Try drawing with Mermaid API first (usually best quality, no local graphviz needed)
+    try:
+        png_image = graph.draw_mermaid_png()
+        display(Image(png_image))
+        return
+    except Exception:
+        pass # Fallback
+
+    # Try drawing with PyGraphviz
+    try:
+        png_image = graph.draw_png()
+        display(Image(png_image))
+        return
+    except Exception:
+        pass # Fallback
+
+    # Fallback to syntax
+    console.print(Panel(
+        "[yellow]Could not generate graph image.[/yellow]\n"
+        "PyGraphviz or Mermaid API failed. Here is the Mermaid syntax:",
+        title="Graph Visualization Fallback",
+        border_style="yellow"
+    ))
+    try:
+        mermaid_code = graph.draw_mermaid()
+        console.print(Syntax(mermaid_code, "mermaid", theme="monokai", line_numbers=True))
+    except Exception as e:
+        console.print(f"[bold red]Failed to get mermaid syntax:[/bold red] {e}")
