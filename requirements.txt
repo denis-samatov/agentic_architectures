@@ -1,0 +1,13 @@
+langchain
+langgraph
+langchain-nebius
+rich
+python-dotenv
+langchain-community
+langchain-tavily
+numpy
+IPython
+typing-extensions
+faiss-cpu
+neo4j
+jupyter

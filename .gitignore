@@ -1,0 +1,22 @@
+.env
+.venv
+.DS_Store
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+logs/
+*.log
+data/
+output/
+# Jupyter Checkpoints
+.ipynb_checkpoints
+**/.ipynb_checkpoints
+
+# Python distribution
+build/
+dist/
+*.egg-info/
+
+# Pytest
+.pytest_cache/
