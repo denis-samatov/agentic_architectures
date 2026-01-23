@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
-from IPython.display import Image, display
 
 def setup_environment(project_name: str, required_keys: Optional[List[str]] = None) -> Console:
     """
@@ -20,11 +19,14 @@ def setup_environment(project_name: str, required_keys: Optional[List[str]] = No
     # Adjust path if notebooks are nested deeper or moved
     env_path = "../.env"
 
-    # Check if .env exists in parent or current directory
-    if not os.path.exists(env_path) and not os.path.exists(".env"):
+    # Optimistic loading: try parent directory first, then current directory
+    # This avoids redundant stat calls and correctly handles local .env fallback
+    if load_dotenv(dotenv_path=env_path):
+        pass
+    elif load_dotenv(dotenv_path=".env"):
+        pass
+    else:
          console.print("[yellow]Warning:[/yellow] .env file not found in parent directory or current directory.")
-
-    load_dotenv(dotenv_path=env_path)
     
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
     os.environ["LANGCHAIN_PROJECT"] = project_name
@@ -49,6 +51,9 @@ def visualize_graph(app, console: Console):
     Visualizes the LangGraph application graph.
     Tries to draw using Mermaid API or PyGraphviz, falling back to Mermaid syntax.
     """
+    # Lazy import to reduce startup time for notebooks not using visualization
+    from IPython.display import Image, display
+
     graph = app.get_graph()
 
     # Try drawing with Mermaid API first (usually best quality, no local graphviz needed)
