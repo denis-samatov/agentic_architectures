@@ -1,11 +1,11 @@
 import os
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from dotenv import load_dotenv
-from rich.console import Console
-from rich.panel import Panel
-from rich.syntax import Syntax
 
-def setup_environment(project_name: str, required_keys: Optional[List[str]] = None) -> Console:
+if TYPE_CHECKING:
+    from rich.console import Console
+
+def setup_environment(project_name: str, required_keys: Optional[List[str]] = None) -> "Console":
     """
     Sets up the environment for the notebooks:
     1. Loads environment variables from .env file.
@@ -13,6 +13,10 @@ def setup_environment(project_name: str, required_keys: Optional[List[str]] = No
     3. Checks for required API keys.
     4. Returns a Rich Console for printing.
     """
+    # Lazy import rich components to reduce module import time
+    from rich.console import Console
+    from rich.panel import Panel
+
     console = Console()
 
     # Load .env from parent directory (assuming notebook is in the notebooks/ folder)
@@ -46,27 +50,30 @@ def setup_environment(project_name: str, required_keys: Optional[List[str]] = No
     console.print(Panel(f"[green]Environment setup for '{project_name}' complete.[/green]", title="Setup", border_style="green"))
     return console
 
-def visualize_graph(app, console: Console):
+def visualize_graph(app, console: "Console"):
     """
     Visualizes the LangGraph application graph.
-    Tries to draw using Mermaid API or PyGraphviz, falling back to Mermaid syntax.
+    Tries to draw using PyGraphviz (fast, local), falling back to Mermaid API (slower, remote),
+    and finally Mermaid syntax.
     """
     # Lazy import to reduce startup time for notebooks not using visualization
     from IPython.display import Image, display
+    from rich.panel import Panel
+    from rich.syntax import Syntax
 
     graph = app.get_graph()
 
-    # Try drawing with Mermaid API first (usually best quality, no local graphviz needed)
+    # Optimization: Try drawing with PyGraphviz first (local, faster than network call)
     try:
-        png_image = graph.draw_mermaid_png()
+        png_image = graph.draw_png()
         display(Image(png_image))
         return
     except Exception:
         pass # Fallback
 
-    # Try drawing with PyGraphviz
+    # Try drawing with Mermaid API (usually best quality but requires network/external tool)
     try:
-        png_image = graph.draw_png()
+        png_image = graph.draw_mermaid_png()
         display(Image(png_image))
         return
     except Exception:
