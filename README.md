@@ -2,7 +2,7 @@
 
 ![made-with-Python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg) ![made-with-Jupyter](https://img.shields.io/badge/Made%20with-Jupyter-f97c2c.svg) ![LangChain](https://img.shields.io/badge/LangChain-b084f3.svg) ![LangGraph](https://img.shields.io/badge/LangGraph-20232a.svg) ![Educational](https://img.shields.io/badge/Purpose-Educational-4caf50.svg)
 
-Добро пожаловать на комплексный практический мастер-класс по **проектированию современных AI агентов**. Этот репозиторий содержит подробные реализации **17+ state-of-the-art архитектур агентов**, созданных с использованием LangChain и LangGraph. Он задуман как "живой учебник", заполняющий пробел между теоретическими концепциями и практическим кодом, готовым к продакшену.
+Добро пожаловать на комплексный практический мастер-класс по **проектированию современных AI агентов**. Этот репозиторий содержит подробные реализации **23 state-of-the-art архитектур агентов**, созданных с использованием LangChain и LangGraph. Он задуман как "живой учебник", заполняющий пробел между теоретическими концепциями и запускаемыми учебными примерами кода.
 
 ## 📖 Почему этот репозиторий?
 
