@@ -1,90 +1,90 @@
-# Паттерны Проектирования Агентных Систем (Design Patterns)
+# Agentic System Design Patterns
 
-Профессиональная разработка агентов напоминает конструктор. Вы не пишете агента "с нуля", а комбинируете известные, проверенные временем паттерны.
+Professional agent development is like building with blocks. You don't write an agent "from scratch" — you combine known, time-tested patterns.
 
-В этом документе систематизированы основные структурные блоки (Structural Blocks) и паттерны потока управления (Control Flow), используемые в проекте.
-
----
-
-## 1. Структурные паттерны (Structural Patterns)
-
-Как организован сам "мозг" агента.
-
-### 🎭 Persona / Role Pattern (Паттерн Персоны)
-Присвоение агенту конкретной роли для сужения пространства поиска и задания стиля.
-*   **Пример:** "Ты — старший Python-разработчик. Ты пишешь код, следуя PEP8, предпочитаешь композицию наследованию..."
-*   **Зачем:** Повышает специфичность и качество ответов в узких доменах.
-
-### 🗣️ Chain of Thought (CoT) (Цепочка рассуждений)
-Побуждение модели "думать вслух" перед ответом.
-*   **Реализация:** Добавление в промпт инструкции `Let's think step by step` или явное требование структуры `Thought: ... Action: ...`.
-*   **Зачем:** Значительно повышает способность модели решать логические и математические задачи.
-
-### 💉 Few-Shot Prompting (Обучение на примерах)
-Предоставление модели примеров "Вопрос -> Ответ" внутри контекстного окна.
-*   **Реализация:** Динамический подбор примеров (Dynamic Few-Shot) из векторной базы, наиболее похожих на текущий запрос пользователя.
-*   **Зачем:** Задает формат вывода и логику решения без дообучения весов модели (Fine-tuning).
+This document systematizes the core structural blocks and control-flow patterns used throughout the project.
 
 ---
 
-## 2. Паттерны Потока Управления (Control Flow Patterns)
+## 1. Structural Patterns
 
-Как информация движется внутри системы (реализуеся через графы, например, LangGraph).
+How the agent's "brain" itself is organized.
 
-### 🔗 Chain (Цепочка)
-Линейная последовательность шагов.
-*   `Ввод -> Шаг 1 -> Шаг 2 -> Вывод`
-*   **Пример:** Получить текст -> Саммаризировать -> Перевести.
+### 🎭 Persona / Role Pattern
+Assigning the agent a specific role to narrow its search space and set its style.
+*   **Example:** "You are a senior Python developer. You write code following PEP8, prefer composition over inheritance..."
+*   **Why:** Improves the specificity and quality of answers in narrow domains.
 
-### 🔄 Loop / Cycle (Цикл)
-Повторение шагов до выполнения условия выхода. Основа агентности.
-*   **Refinement Loop:** Сгенерировать -> Проверить -> Если плохо, сгенерировать заново.
-*   **ReAct Loop:** Мысль -> Инструмент -> Наблюдение -> Мысль...
+### 🗣️ Chain of Thought (CoT)
+Prompting the model to "think out loud" before answering.
+*   **Implementation:** Adding an instruction like `Let's think step by step` to the prompt, or explicitly requiring a `Thought: ... Action: ...` structure.
+*   **Why:** Significantly improves the model's ability to solve logical and mathematical problems.
 
-### 🔀 Routing (Маршрутизация)
-Классификация запроса и направление его по разным путям.
-*   **Пример:** Если вопрос о цене -> Агент базы данных. Если вопрос о правилах -> Агент базы знаний (RAG).
-*   **Техника:** Используйте "llm.with_structured_output" для надежной классификации интента.
-
-### 🔠 Parallelization (Параллелизм / Fan-out Fan-in)
-Одновременное выполнение независимых задач с последующей агрегацией.
-*   **Sectioning:** Написать разные секции отчета параллельно.
-*   **Voting:** Спросить 3 разные модели и выбрать самый популярный ответ (Self-Consistency).
+### 💉 Few-Shot Prompting
+Providing the model with "Question -> Answer" examples inside the context window.
+*   **Implementation:** Dynamic Few-Shot — selecting examples from a vector store that are most similar to the current user query.
+*   **Why:** Sets the output format and solution logic without fine-tuning the model's weights.
 
 ---
 
-## 3. Паттерны Надежности (Reliability Patterns)
+## 2. Control Flow Patterns
 
-Как сделать систему устойчивой к сбоям.
+How information moves through the system (typically implemented via graphs, e.g. LangGraph).
 
-### 🛡️ Guardrails (Ограждения)
-Синтаксические или семантические фильтры на входе и выходе.
-*   **Input Rail:** Проверка, не пытается ли пользователь взломать систему (Prompt Injection).
-*   **Output Rail:** Проверка, не выдает ли модель PII (персональные данные) или невалидный JSON. Если проверка не пройдена — возврат ошибки или повторная генерация.
+### 🔗 Chain
+A linear sequence of steps.
+*   `Input -> Step 1 -> Step 2 -> Output`
+*   **Example:** Fetch text -> Summarize -> Translate.
 
-### 🏃‍♂️ Fallback (Запасной вариант)
-План "Б", если основной механизм не сработал.
-*   **Пример:** Если вызов инструмента `GoogleSearch` вернул Timeout, использовать `WikipediaSearch`. Если GPT-4 вернула ошибку API, переключиться на GPT-3.5 или Claude.
+### 🔄 Loop / Cycle
+Repeating steps until an exit condition is met. The foundation of agency.
+*   **Refinement Loop:** Generate -> Check -> If it's bad, generate again.
+*   **ReAct Loop:** Thought -> Tool -> Observation -> Thought...
 
-### 👁️ Human-in-the-Loop (Человек в контуре)
-Прерывание выполнения графа для получения одобрения или правок от человека.
+### 🔀 Routing
+Classifying a request and directing it down different paths.
+*   **Example:** If the question is about pricing -> a database agent. If it's about policy -> a knowledge-base agent (RAG).
+*   **Technique:** Use `llm.with_structured_output` for reliable intent classification.
+
+### 🔠 Parallelization (Fan-out / Fan-in)
+Running independent tasks concurrently, then aggregating the results.
+*   **Sectioning:** Write different sections of a report in parallel.
+*   **Voting:** Ask 3 different models and pick the most popular answer (Self-Consistency).
+
+---
+
+## 3. Reliability Patterns
+
+How to make the system resilient to failures.
+
+### 🛡️ Guardrails
+Syntactic or semantic filters on input and output.
+*   **Input Rail:** Checking whether the user is attempting to jailbreak the system (prompt injection).
+*   **Output Rail:** Checking whether the model is leaking PII (personal data) or producing invalid JSON. If the check fails, return an error or regenerate.
+
+### 🏃‍♂️ Fallback
+A "plan B" for when the primary mechanism fails.
+*   **Example:** If the `GoogleSearch` tool call times out, fall back to `WikipediaSearch`. If GPT-4 returns an API error, switch to GPT-3.5 or Claude.
+
+### 👁️ Human-in-the-Loop
+Pausing graph execution to get approval or edits from a human.
 *   **Pattern:** `Plan -> (Wait for Approval) -> Execute`.
-*   **Реализация:** Используйте механизмы `interrupt_before` или `checkpoints` в LangGraph.
+*   **Implementation:** Use LangGraph's `interrupt_before` or checkpoint mechanisms.
 
 ---
 
-## 4. Паттерны Памяти (Memory Patterns)
+## 4. Memory Patterns
 
 ### 🧠 Short-term Memory (Window Buffer)
-Хранение только последних N сообщений. Дешево и просто, но теряет контекст длинных диалогов.
+Storing only the last N messages. Cheap and simple, but loses context in long conversations.
 
 ### 🗄️ Summary Memory
-Периодическая суммаризация старых сообщений. Позволяет удерживать суть разговора бесконечно долго, жертвуя деталями.
-*   **Реализация:** Фоновый процесс, который сжимает `Messages[0:N]` в `SystemMessage("Ранее мы обсуждали...")`.
+Periodically summarizing older messages. Lets you retain the gist of a conversation indefinitely, at the cost of detail.
+*   **Implementation:** A background process that compresses `Messages[0:N]` into a `SystemMessage("Earlier we discussed...")`.
 
 ### 🗂️ CRUD Memory (Shared State)
-Использование внешнего хранилища (БД) как "листа бумаги".
-*   Агент может `Read`, `Update`, `Delete` записи о пользователе в явном виде. Это позволяет менять факты ("Пользователь переехал в Берлин") без потери старого контекста.
+Using external storage (a database) as a "sheet of paper."
+*   The agent can explicitly `Read`, `Update`, `Delete` records about the user. This lets facts change ("the user moved to Berlin") without losing prior context.
 
 ---
-*При проектировании ваших систем комбинируйте эти паттерны. Например, **ReAct** агент может использовать **Few-Shot** промптинг и иметь **Memory** с **Fallback** механизмами.*
+*When designing your own systems, combine these patterns. For example, a **ReAct** agent might use **Few-Shot** prompting and have **Memory** with **Fallback** mechanisms.*

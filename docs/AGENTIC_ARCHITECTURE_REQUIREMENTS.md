@@ -1,49 +1,49 @@
-# Требования к Архитектуре Агентских Систем
+# Agentic Architecture Requirements
 
-Основываясь на анализе современных паттернов проектирования автономных агентов (в частности, на базе LangGraph и LangChain), ниже представлен детальный список требований, которым должна удовлетворять зрелая архитектура агентской системы. Эти требования разделены на функциональные блоки, соответствующие основным "способностям" агентов.
+Based on an analysis of modern design patterns for autonomous agents (in particular, built on LangGraph and LangChain), below is a detailed list of requirements a mature agentic architecture should satisfy. These requirements are grouped into functional blocks corresponding to the core "capabilities" of agents.
 
-## 1. Когнитивные Способности и Рассуждения (Reasoning & Cognition)
+## 1. Reasoning & Cognition
 
-Архитектура должна обеспечивать не только реакцию на запрос, но и глубокую когнитивную обработку:
+An architecture must provide more than a reaction to a request — it needs deep cognitive processing:
 
-*   **Рефлексия (Reflection/Self-Correction):** Система должна уметь критически оценивать собственные выходные данные перед их финальной выдачей. Агент должен иметь механизмы для итеративного улучшения собственного ответа («подумать, проверить, исправить»).
-*   **Динамическое Планирование (Dynamic Planning):** Для сложных задач система должна уметь декомпозировать общую цель на последовательность выполнимых шагов (подзадач) *до* начала исполнения, а также корректировать этот план по мере поступления новой информации.
-*   **Древовидное Рассуждение (Tree of Thoughts):** В задачах, требующих поиска оптимального пути, агент должен уметь исследовать несколько возможных веток рассуждений параллельно, оценивать их перспективность и отсекать тупиковые ветви.
-*   **Цикл "Мысль-Действие" (ReAct Loop):** Архитектура должна поддерживать непрерывный цикл, где агент сначала рассуждает (Reasoning), затем выполняет действие (Acting), анализирует результат и снова рассуждает.
+*   **Reflection / Self-Correction:** The system must be able to critically evaluate its own output before final delivery. The agent needs mechanisms for iteratively improving its own answer ("think, check, fix").
+*   **Dynamic Planning:** For complex tasks, the system must be able to decompose an overall goal into a sequence of executable steps (subtasks) *before* execution begins, and adjust that plan as new information arrives.
+*   **Tree of Thoughts:** For tasks that require finding an optimal path, the agent must be able to explore several possible reasoning branches in parallel, score their promise, and prune dead ends.
+*   **Thought-Action Loop (ReAct):** The architecture must support a continuous loop where the agent first reasons, then acts, then analyzes the result and reasons again.
 
-## 2. Взаимодействие с Окружением (Environment Interaction)
+## 2. Environment Interaction
 
-Агент не должен быть замкнут в рамках своих внутренних знаний:
+An agent must not be confined to its internal knowledge:
 
-*   **Использование Инструментов (Tool Use):** Архитектура должна предоставлять интерфейсы для безопасного вызова внешних API, поиска в интернете, работы с файловой системой и выполнения кода.
-*   **Верификация Действий (Plan, Execute, Verify - PEV):** Критически важные действия должны проходить этап верификации. Результат выполнения инструмента должен проверяться на корректность и наличие ошибок перед тем, как система перейдет к следующему шагу.
-*   **Симуляция (Mental Loop/Simulator):** Перед выполнением необратимых или рискованных действий в реальном мире, агент должен иметь возможность "проиграть" сценарий во внутренней модели (симуляторе) для оценки последствий.
+*   **Tool Use:** The architecture must provide interfaces for safely calling external APIs, searching the web, working with the filesystem, and executing code.
+*   **Action Verification (Plan, Execute, Verify — PEV):** Critical actions must go through a verification step. A tool's execution result must be checked for correctness and errors before the system moves to the next step.
+*   **Simulation (Mental Loop / Simulator):** Before taking an irreversible or risky action in the real world, the agent should be able to "play out" the scenario in an internal model (simulator) to assess consequences.
 
-## 3. Память и Управление Контекстом (Memory & Context)
+## 3. Memory & Context Management
 
-Система должна эффективно управлять знаниями во времени:
+The system must manage knowledge effectively over time:
 
-*   **Эпизодическая Память (Episodic Memory):** Возможность сохранять и извлекать историю прошлых взаимодействий (обычно через Vector Store), чтобы поддерживать долгосрочный контекст диалога.
-*   **Семантическая Память (Semantic Memory):** Структурированное хранение фактов о мире и пользователе (например, через Knowledge Graph), позволяющее делать сложные логические выводы на основе накопленных знаний.
-*   **Общее Рабочее Пространство (Blackboard):** В многоагентных системах должно существовать единое разделяемое состояние (Blackboard), куда разные агенты могут писать свои выводы и откуда могут читать контекст задачи.
+*   **Episodic Memory:** The ability to store and retrieve the history of past interactions (typically via a vector store) to maintain long-term conversational context.
+*   **Semantic Memory:** Structured storage of facts about the world and the user (e.g. via a knowledge graph), enabling complex logical inference over accumulated knowledge.
+*   **Shared Workspace (Blackboard):** In multi-agent systems, a single shared state (blackboard) should exist, where different agents can write their findings and read task context.
 
-## 4. Архитектура Безопасности и Надежности (Safety & Robustness)
+## 4. Safety and Robustness
 
-Для использования в продакшене система должна быть предсказуемой и безопасной:
+For production use, the system must be predictable and safe:
 
-*   **Человек-в-контуре (Human-in-the-loop / Dry Run):** Архитектура должна поддерживать режим "сухого прогона", когда агент планирует действие, но физическое выполнение блокируется до явного подтверждения человеком.
-*   **Метакогнитивный Мониторинг (Reflexive Metacognitive):** Агент должен "знать свои пределы". Если уровень уверенности в решении низок или задача выходит за рамки компетенции, система должна уметь эскалировать задачу человеку или другому агенту, а не галлюцинировать.
+*   **Human-in-the-loop / Dry Run:** The architecture must support a "dry run" mode, where an agent plans an action but its actual execution is blocked until explicitly confirmed by a human.
+*   **Metacognitive Monitoring (Reflexive Metacognitive):** The agent must "know its limits." When confidence in a decision is low or a task falls outside its competence, the system should escalate to a human or another agent rather than hallucinate.
 
-## 5. Мультиагентное Взаимодействие (Multi-Agent Collaboration)
+## 5. Multi-Agent Collaboration
 
-Для решения комплексных проблем архитектура должна поддерживать работу нескольких агентов:
+To solve complex problems, the architecture must support multiple agents working together:
 
-*   **Специализация Ролей:** Система должна позволять создание узкоспециализированных агентов (исследователь, кодер, критик), каждый из которых имеет свой промпт и набор инструментов.
-*   **Оркестрация и Маршрутизация (Meta-Controller):** Наличие управляющего слоя (Supervisor/Router), который анализирует входящую задачу и делегирует её наиболее подходящему агенту или группе агентов.
-*   **Ансамблирование (Ensemble/Voting):** Возможность запуска нескольких агентов параллельно для решения одной задачи с последующей агрегацией результатов (голосование или синтез) для повышения точности.
+*   **Role Specialization:** The system must allow creating narrowly specialized agents (researcher, coder, critic), each with its own prompt and toolset.
+*   **Orchestration and Routing (Meta-Controller):** A controlling layer (supervisor/router) that analyzes an incoming task and delegates it to the most suitable agent or group of agents.
+*   **Ensembling (Ensemble/Voting):** The ability to run several agents in parallel on the same task, then aggregate their results (voting or synthesis) to improve accuracy.
 
-## 6. Обучение и Адаптация (Learning & Adaptation)
+## 6. Learning and Adaptation
 
-Архитектура не должна быть статичной:
+The architecture must not be static:
 
-*   **Самосовершенствование (Self-Improvement / RLHF Loop):** Система должна иметь механизмы для сбора обратной связи (от человека или авто-оценщика) и использования её для обновления своих примеров (few-shot examples) или инструкций, улучшая работу в будущих итерациях.
+*   **Self-Improvement (RLHF Loop):** The system needs mechanisms to collect feedback (from a human or an automated judge) and use it to update its examples (few-shot examples) or instructions, improving performance in future iterations.

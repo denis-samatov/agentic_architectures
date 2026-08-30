@@ -1,116 +1,117 @@
-# Фреймворк Оценки Агентных Систем (Evaluation Framework)
+# Agentic System Evaluation Framework
 
-Оценка AI агентов — одна из самых сложных задач в разработке LLM-приложений. В отличие от традиционного ПО, где тесты бинарны (прошел/не прошел), агенты недетерминированы, а критерии "качества" часто субъективны.
+Evaluating AI agents is one of the hardest problems in LLM application development. Unlike traditional software, where tests are binary (pass/fail), agents are non-deterministic and "quality" criteria are often subjective.
 
-Этот документ описывает методологию и метрики для построения надежной системы оценки (Evaluation Pipeline) для ваших агентов.
-
----
-
-## 1. Пять уровней оценки
-
-Мы рекомендуем многоуровневый подход к тестированию, от дешевых автоматических проверок до качественной оценки человеком.
-
-### Уровень 1: Синтаксическая валидация (Unit Tests)
-Проверяет, что агент возвращает данные в правильном формате.
-*   **Что проверяем:** JSON валиден? Pydantic модель парсится? Код компилируется?
-*   **Стоимость:** 🟢 Очень низкая.
-*   **Инструмент:** `assert`, `try/except`, `pydantic`.
-
-### Уровень 2: Детерминированные метрики (Deterministic Assertions)
-Проверка фактов, когда правильный ответ известен точно.
-*   **Что проверяем:** Содержит ли ответ ключевое слово? Совпадает ли числовой ответ с эталоном (Gold standard)? Выполнен ли инструмент с ожидаемыми аргументами?
-*   **Стоимость:** 🟢 Очень низкая.
-*   **Метрики:** Exact Match, String Inclusion, RegEx.
-
-### Уровень 3: Семантическая оценка (Embedding Distance)
-Сравнение смысла ответа с эталонным ответом без требования точного совпадения слов.
-*   **Что проверяем:** Насколько вектор ответа агента близок к вектору правильного ответа?
-*   **Стоимость:** 🟡 Средняя.
-*   **Метрики:** Cosine Similarity.
-
-### Уровень 4: LLM-как-Судья (LLM-as-a-Judge) 🏆
-Использование сильной модели (например, GPT-4o) для оценки ответа слабой или специализированной модели.
-*   **Что проверяем:** Полезность, вежливость, безопасность, галлюцинации, связность.
-*   **Стоимость:** 🔴 Высокая.
-*   **Инструменты:** Собственные промпты-судьи, Ragas, DeepEval.
-
-### Уровень 5: Оценка человеком (HumanEval / ELO)
-Золотой стандарт, но самый дорогой и медленный.
-*   **Что проверяем:** Тонкие нюансы, креативность, "человечность".
-*   **Стоимость:** 🔴🔴🔴 Очень высокая.
+This document describes the methodology and metrics for building a reliable evaluation pipeline for your agents.
 
 ---
 
-## 2. Ключевые Метрики
+## 1. Five levels of evaluation
 
-При оценке агентов следует фокусироваться на трех измерениях:
+We recommend a multi-tiered testing approach, from cheap automated checks to qualitative human evaluation.
 
-### A. Качество решения (Result Quality)
-1.  **Correctness (Корректность):** Ответил ли агент на вопрос правильно относительно контекста?
-2.  **Faithfulness (Достоверность):** Основан ли ответ только на предоставленном контексте (Retrieval) или агент придумал факты (Галлюцинации)?
-3.  **Relevance (Релевантность):** Насколько ответ соответствует запросу пользователя (не содержит "воды").
+### Level 1: Syntactic validation (Unit Tests)
+Checks that the agent returns data in the correct format.
+*   **What we check:** Is the JSON valid? Does the Pydantic model parse? Does the code compile?
+*   **Cost:** 🟢 Very low.
+*   **Tools:** `assert`, `try/except`, `pydantic`.
 
-### B. Эффективность агента (Agent Efficiency)
-1.  **Trajectory Validity:** Были ли шаги агента логичными? Не ходил ли он кругами (loops)?
-2.  **Tool Selection Accuracy:** Выбрал ли агент правильный инструмент для задачи?
-3.  **Tool Argument Quality:** Передал ли он правильные параметры в инструмент?
+### Level 2: Deterministic metrics (Deterministic Assertions)
+Fact-checking when the correct answer is known exactly.
+*   **What we check:** Does the answer contain a keyword? Does the numeric answer match the gold standard? Was the tool called with the expected arguments?
+*   **Cost:** 🟢 Very low.
+*   **Metrics:** Exact Match, String Inclusion, RegEx.
 
-### C. Безопасность и Стиль
-1.  **Maliciousness:** Не попытался ли агент выполнить вредоносные инструкции (Jailbreak)?
-2.  **Tone Consistency:** Соответствует ли тон заданной персоне?
+### Level 3: Semantic evaluation (Embedding Distance)
+Comparing the meaning of an answer to a reference answer without requiring an exact word match.
+*   **What we check:** How close is the agent's answer vector to the correct answer's vector?
+*   **Cost:** 🟡 Medium.
+*   **Metrics:** Cosine Similarity.
+
+### Level 4: LLM-as-a-Judge 🏆
+Using a strong model (e.g. GPT-4o) to evaluate the output of a weaker or specialized model.
+*   **What we check:** Helpfulness, politeness, safety, hallucinations, coherence.
+*   **Cost:** 🔴 High.
+*   **Tools:** Custom judge prompts, Ragas, DeepEval.
+
+### Level 5: Human evaluation (HumanEval / ELO)
+The gold standard, but the most expensive and slowest.
+*   **What we check:** Subtle nuances, creativity, "human-ness."
+*   **Cost:** 🔴🔴🔴 Very high.
 
 ---
 
-## 3. Паттерн LLM-as-a-Judge
+## 2. Key metrics
 
-В большинстве ноутбуков этого проекта мы используем паттерн "Судья". Это промпт, который получает на вход:
-1.  `Input`: Запрос пользователя.
-2.  `Output`: Ответ агента.
-3.  `Context` (опционально): Использованные инструменты или документы.
-4.  `Reference` (опционально): Идеальный ответ.
+When evaluating agents, focus on three dimensions:
 
-### Пример промпта судьи (G-Eval style):
+### A. Result quality
+1.  **Correctness:** Did the agent answer the question correctly given the context?
+2.  **Faithfulness:** Is the answer grounded only in the provided context (retrieval), or did the agent invent facts (hallucination)?
+3.  **Relevance:** How well does the answer match the user's request (no filler).
+
+### B. Agent efficiency
+1.  **Trajectory Validity:** Were the agent's steps logical? Did it loop in circles?
+2.  **Tool Selection Accuracy:** Did the agent pick the right tool for the task?
+3.  **Tool Argument Quality:** Did it pass the tool the correct parameters?
+
+### C. Safety and style
+1.  **Maliciousness:** Did the agent attempt to follow malicious instructions (jailbreak)?
+2.  **Tone Consistency:** Does the tone match the assigned persona?
+
+---
+
+## 3. The LLM-as-a-Judge pattern
+
+Most notebooks in this project use the "Judge" pattern. This is a prompt that receives as input:
+1.  `Input`: the user's request.
+2.  `Output`: the agent's answer.
+3.  `Context` (optional): the tools or documents used.
+4.  `Reference` (optional): the ideal answer.
+
+### Example judge prompt (G-Eval style):
 
 ```text
-Ты - беспристрастный судья AI. Твоя задача - оценить качество ответа AI-ассистента на основе следующего критерия:
+You are an impartial AI judge. Your task is to evaluate the quality of an AI
+assistant's answer based on the following criterion:
 
-Критерий: ПОЛЕЗНОСТЬ (Helpfulness)
-Оценка: от 1 до 5
-1 - Ответ абсолютно бесполезен или неверен.
-3 - Ответ полезен, но содержит лишнюю информацию или упускает детали.
-5 - Идеальный, лаконичный и точный ответ.
+Criterion: HELPFULNESS
+Score: 1 to 5
+1 - The answer is completely unhelpful or incorrect.
+3 - The answer is helpful but contains unnecessary information or misses details.
+5 - A perfect, concise, and accurate answer.
 
 User Input: {input}
 AI Output: {output}
 
-Пошагово объясни свое решение, а затем выведи оценку в формате: [[ОЦЕНКА]].
+Explain your reasoning step by step, then output the score in the format: [[SCORE]].
 ```
 
 ---
 
-## 4. Как построить Pipeline оценки
+## 4. Building an evaluation pipeline
 
-Для профессионального проекта вам нужен **Evaluation Dataset** (набор данных для оценки).
+For a professional project you need an **Evaluation Dataset**.
 
-1.  **Соберите Golden Dataset:**
-    *   20-50 пар `(Вопрос, Идеальный Ответ)`.
-    *   Включите "сложные" случаи (adversarial examples).
-2.  **Запустите прогон (Sweep):**
-    *   Прогоните вопросы через вашего агента.
-    *   Сохраните "Траектории" (промежуточные шаги) и финальные ответы.
-3.  **Запустите Судью:**
-    *   Сравните ответы агента с идеальными ответами используя LLM-Judge.
-4.  **Анализируйте отчет:**
-    *   Если Score < 4/5 → Анализируйте траектории. Где ошибся агент?
-        *   Не тот инструмент? → Доработайте `Tool Description`.
-        *   Запутался в логике? → Улучшите `Reasoning Prompt` или смените модель.
+1.  **Build a golden dataset:**
+    *   20-50 `(Question, Ideal Answer)` pairs.
+    *   Include "hard" cases (adversarial examples).
+2.  **Run a sweep:**
+    *   Run the questions through your agent.
+    *   Save the "trajectories" (intermediate steps) and final answers.
+3.  **Run the judge:**
+    *   Compare the agent's answers to the ideal answers using an LLM judge.
+4.  **Analyze the report:**
+    *   If score < 4/5 → analyze the trajectories. Where did the agent go wrong?
+        *   Wrong tool? → Improve the `Tool Description`.
+        *   Confused reasoning? → Improve the `Reasoning Prompt` or switch models.
 
 ---
 
-## 5. Инструменты в экосистеме
+## 5. Ecosystem tools
 
-Не обязательно писать все с нуля. Стандарты индустрии:
-*   **LangSmith (LangChain):** Лучший инструмент для тразссировки и оценки цепочек.
-*   **Ragas:** Фреймворк специально для оценки RAG (Relevance, Faithfulness).
-*   **DeepEval:** Unit-тесты для LLM.
-*   **Arize Phoenix:** Open-source альтернатива для трассировки и эвалюации.
+You don't need to build everything from scratch. Industry standards:
+*   **LangSmith (LangChain):** The best tool for tracing and evaluating chains.
+*   **Ragas:** A framework specifically for evaluating RAG (relevance, faithfulness).
+*   **DeepEval:** Unit tests for LLMs.
+*   **Arize Phoenix:** An open-source alternative for tracing and evaluation.

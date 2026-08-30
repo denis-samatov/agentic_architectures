@@ -1,8 +1,8 @@
 # Docs
 
-Документация и теоретические материалы:
+Documentation and theoretical materials:
 
-*   [Требования к Архитектуре (Requirements)](./AGENTIC_ARCHITECTURE_REQUIREMENTS.md) - Детальный список функциональных требований к современным агентам.
-*   [Гайд по Выбору (Selection Guide)](./AGENT_SELECTION_GUIDE.md) - Как выбрать правильную архитектуру под вашу задачу (Матрица решений).
-*   [Фреймворк Оценки (Evaluation)](./EVALUATION_FRAMEWORK.md) - Методология тестирования агентов и метрики (LLM-as-a-Judge).
-*   [Паттерны Проектирования (Design Patterns)](./DESIGN_PATTERNS.md) - Библиотека структурных паттернов (Routing, ReAct, RAG, Memory).
+*   [Architecture Requirements](./AGENTIC_ARCHITECTURE_REQUIREMENTS.md) — A detailed list of functional requirements for modern agents.
+*   [Selection Guide](./AGENT_SELECTION_GUIDE.md) — How to choose the right architecture for your task (decision matrix).
+*   [Evaluation Framework](./EVALUATION_FRAMEWORK.md) — Agent testing methodology and metrics (LLM-as-a-Judge).
+*   [Design Patterns](./DESIGN_PATTERNS.md) — A library of structural patterns (Routing, ReAct, RAG, Memory).

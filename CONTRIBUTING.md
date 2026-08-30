@@ -1,35 +1,35 @@
 # Contributing to All Agentic Architectures
 
-Спасибо за ваш интерес к проекту! Мы рады любой помощи — от исправлений опечаток до добавления новых архитектур.
+Thanks for your interest in the project! We welcome any help — from fixing typos to adding new architectures.
 
-## 🚀 Как начать
+## 🚀 Getting started
 
-1.  **Форкните репозиторий** и склонируйте его локально.
-2.  **Настройте окружение**:
+1.  **Fork the repository** and clone it locally.
+2.  **Set up your environment**:
     ```bash
     make install
     ```
-    Это создаст виртуальное окружение и установит зависимости.
-3.  **Создайте .env файл**:
+    This creates a virtual environment and installs dependencies.
+3.  **Create an .env file**:
     ```bash
     cp .env.example .env
-    # Заполните своими API ключами
+    # Fill in your API keys
     ```
 
-## 🛠 Процесс разработки
+## 🛠 Development process
 
--   Новые ноутбуки добавляйте в папку `notebooks/`.
--   Следите за нумерацией файлов (например, `18_new_architecture.ipynb`).
--   Перед отправкой изменений убедитесь, что код отформатирован и проверен.
+-   Add new notebooks to the `notebooks/` folder.
+-   Follow the existing file numbering (e.g. `18_new_architecture.ipynb`).
+-   Before submitting changes, make sure the code is formatted and linted.
 
-## 📝 Стиль кода
+## 📝 Code style
 
-Мы используем `ruff` для линтинга и форматирования.
+We use `ruff` for linting and formatting.
 ```bash
 make lint
 make format
 ```
 
-## 🐛 Сообщение об ошибках
+## 🐛 Reporting bugs
 
-Если вы нашли ошибку, пожалуйста, создайте Issue с подробным описанием проблемы и шагами для её воспроизведения.
+If you find a bug, please open an Issue with a detailed description of the problem and steps to reproduce it.
