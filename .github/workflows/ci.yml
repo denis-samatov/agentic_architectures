@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint notebook_utils.py
+        run: ruff check notebooks/notebook_utils.py
+
+      - name: Validate notebook JSON structure
+        run: |
+          python -c "
+          import json, glob
+          for f in glob.glob('notebooks/*.ipynb'):
+              json.load(open(f, encoding='utf-8'))
+              print(f'OK: {f}')
+          "

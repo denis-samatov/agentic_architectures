@@ -1,3 +1,6 @@
+# This file configures ruff only. It declares no [project] section or
+# dependencies — see requirements.txt for the authoritative dependency list.
+
 [tool.ruff]
 extend-include = ["*.ipynb"]
 # Exclude a variety of commonly ignored directories.

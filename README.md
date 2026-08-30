@@ -163,6 +163,8 @@ pip install -r requirements.txt
 
 You may also need to install `pygraphviz` to visualize LangGraph graphs.
 
+> **Note:** `requirements.txt` is the authoritative dependency list — install from it as shown above. `pyproject.toml` in this repo only configures `ruff` (linting/formatting) and declares no dependencies or build metadata.
+
 ### 4. Configure environment variables
 
 The agents need API keys to run. Create a file named `.env` in the project root. You can look at `requirements.txt` to see what's needed, then build your own `.env` file.
