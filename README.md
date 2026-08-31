@@ -1,6 +1,8 @@
 # All Agentic Architectures
 
-![made-with-Python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg) ![made-with-Jupyter](https://img.shields.io/badge/Made%20with-Jupyter-f97c2c.svg) ![LangChain](https://img.shields.io/badge/LangChain-b084f3.svg) ![LangGraph](https://img.shields.io/badge/LangGraph-20232a.svg) ![Educational](https://img.shields.io/badge/Purpose-Educational-4caf50.svg)
+[![CI](https://github.com/denis-samatov/agentic_architectures/actions/workflows/ci.yml/badge.svg)](https://github.com/denis-samatov/agentic_architectures/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 
 Welcome to a comprehensive, hands-on masterclass on **designing modern AI agents**. This repository contains detailed implementations of **23 state-of-the-art agent architectures**, built with LangChain and LangGraph. It's designed as a "living textbook" that bridges the gap between theoretical concepts and runnable, educational example code.
 
