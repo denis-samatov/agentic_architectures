@@ -1,10 +1,10 @@
-# All Agentic Architectures
+# Agentic Architecture Patterns
 
-[![CI](https://github.com/denis-samatov/agentic_architectures/actions/workflows/ci.yml/badge.svg)](https://github.com/denis-samatov/agentic_architectures/actions/workflows/ci.yml)
+[![CI](https://github.com/denis-samatov/agentic-architectures/actions/workflows/ci.yml/badge.svg)](https://github.com/denis-samatov/agentic-architectures/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 
-Welcome to a comprehensive, hands-on masterclass on **designing modern AI agents**. This repository contains detailed implementations of **23 state-of-the-art agent architectures**, built with LangChain and LangGraph. It's designed as a "living textbook" that bridges the gap between theoretical concepts and runnable, educational example code.
+This repository contains educational implementations of **23 agent architecture patterns**, built primarily with LangChain and LangGraph. It is a living, hands-on reference that connects design concepts with runnable notebook examples.
 
 ## 📖 Why this repository?
 
@@ -12,9 +12,9 @@ The field of AI agents is evolving at an incredible pace, but many resources rem
 
 -   **From theory to tangible code:** Every architecture is not just explained, but implemented end to end in a runnable Jupyter notebook.
 -   **A structured learning path:** The notebooks are ordered to build concepts progressively, from foundational patterns to highly advanced, multi-agent, and self-aware systems.
--   **A focus on evaluation:** We don't just build agents, we measure them. Many notebooks include a robust `LLM-as-a-Judge` pattern to provide quantitative, objective feedback on agent performance — a critical skill for production AI.
+-   **A focus on evaluation:** Several notebooks demonstrate `LLM-as-a-Judge` as one model-based evaluation signal. These scores are repeatable under fixed settings but are not objective ground truth and should be combined with task-specific checks and human review.
 -   **Real-world scenarios:** Examples are grounded in practical applications — financial analysis, coding, social media management, medical triage — making the concepts immediately applicable.
--   **A single, modern framework:** Using `LangGraph` as the primary orchestrator, you'll learn a powerful, stateful, and cyclical approach to agent design that is quickly becoming the industry standard.
+-   **A consistent orchestration framework:** LangGraph is used as the primary orchestrator for stateful and cyclical examples.
 
 ---
 
@@ -137,8 +137,8 @@ Follow these steps to set up your local environment and run the notebooks.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/all-agentic-architectures.git
-cd all-agentic-architectures
+git clone https://github.com/denis-samatov/agentic-architectures.git
+cd agentic-architectures
 ```
 
 ### 2. Set up a virtual environment
