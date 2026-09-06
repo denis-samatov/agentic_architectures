@@ -1,4 +1,4 @@
-# Contributing to All Agentic Architectures
+# Contributing to Agentic Architecture Patterns
 
 Thanks for your interest in the project! We welcome any help — from fixing typos to adding new architectures.
 
